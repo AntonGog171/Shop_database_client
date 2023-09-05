@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Видалити товар з магазину</title>
+</head>
+
+<body>
+    <h1>Видалити товар з магазину</h1>
+    <form class="my-form" method="POST" action="{{ url_for('delete_product_store') }}">
+        <div>
+            <label for="upc">UPC товару:</label>
+            <select name="upc">
+                {% for option in options %}
+                <option value="{{ option }}">{{ option }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" value="Зберегти">Видалити</button>
+        </div>
+    </form>
+    <br>
+    <a href="{{ url_for('go_product_store') }}" class="btn btn-primary btn-icon-split">
+        <span class="icon text-white-50">
+            <i class="fas fa-flag"></i>
+        </span>
+        <span class="text">Назад</span>
+    </a>
+</body>
+
+</html>
+{% endblock %}

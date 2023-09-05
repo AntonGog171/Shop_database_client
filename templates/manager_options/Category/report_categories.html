@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Звіт про категорії</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .sort-btn {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+    <script>
+        function sortTable(columnIndex) {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById("categories-table");
+            switching = true;
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                    if (columnIndex === 0) {
+                        // Сортування за номером категорії як числове значення
+                        if (parseInt(x.innerHTML) > parseInt(y.innerHTML)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        // Сортування за назвою категорії як рядкове значення
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+
+        function saveReport() {
+            var docDefinition = {
+                content: [
+                    { text: 'Звіт про категорії', style: 'header' },
+                    { text: '\n' },
+                    {
+                        table: {
+                            headerRows: 1,
+                            widths: ['auto', 'auto'],
+                            body: collectTableData()
+                        }
+                    }
+                ],
+                styles: {
+                    header: {
+                        fontSize: 18,
+                        bold: true
+                    }
+                }
+            };
+
+            pdfMake.createPdf(docDefinition).download('report.pdf');
+        }
+
+        function collectTableData() {
+            var table = document.getElementById("categories-table");
+            var data = [];
+            var headers = [];
+
+            for (var i = 0; i < table.rows[0].cells.length; i++) {
+                headers[i] = table.rows[0].cells[i].innerHTML;
+            }
+
+            data.push(headers);
+
+            for (var j = 1; j < table.rows.length; j++) {
+                var tableRow = table.rows[j];
+                var rowData = [];
+
+                for (var k = 0; k < tableRow.cells.length; k++) {
+                    rowData[k] = tableRow.cells[k].innerHTML;
+                }
+
+                data.push(rowData);
+            }
+
+            return data;
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Звіт про категорії</h1>
+    <table id="categories-table">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)" class="sort-btn">Номер категорії</th>
+                <th onclick="sortTable(1)" class="sort-btn">Назва категорії</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>{{ category[0] }}</td>
+                <td>{{ category[1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <button onclick="saveReport()">Save Report</button>
+    <a href="{{ url_for('go_category') }}">Назад</a>
+    <a href="{{ url_for('home') }}">Додому</a>
+</body>
+
+</html>

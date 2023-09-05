@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Звіт: Картки клієнтів</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+
+        .sort-header {
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+    <script>
+        function sortTable(columnIndex) {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById("customers-table");
+            switching = true;
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+
+        function resetFiltersAndSort() {
+            window.location.href = "{{ url_for('report_customer_cards') }}";
+        }
+
+        function saveReport() {
+            var docDefinition = {
+                content: [
+                    { text: 'Звіт: Картки клієнтів', style: 'header' },
+                    { text: '\n' },
+                    {
+                        table: {
+                            headerRows: 1,
+                            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                            body: collectTableData()
+                        }
+                    }
+                ],
+                styles: {
+                    header: {
+                        fontSize: 18,
+                        bold: true
+                    }
+                }
+            };
+
+            pdfMake.createPdf(docDefinition).download('customer_cards_report.pdf');
+        }
+
+        function collectTableData() {
+            var table = document.querySelector('table');
+            var data = [];
+
+            for (var i = 0; i < table.rows.length; i++) {
+                var tableRow = table.rows[i];
+                var rowData = [];
+
+                for (var j = 0; j < tableRow.cells.length; j++) {
+                    rowData[j] = tableRow.cells[j].innerHTML;
+                }
+
+                data.push(rowData);
+            }
+
+            return data;
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Звіт: Картки клієнтів</h1>
+    <form action="/search_discount" method="POST">
+        <label for="discount">Відсоток знижки:</label>
+        <input type="number" id="discount" name="discount" step="0.01">
+        <button type="submit">Знайти</button>
+    </form>
+    <button onclick="resetFiltersAndSort()">Скинути</button>
+    <table id="customers-table">
+        <tr>
+            <th onclick="sortTable(1)" class="sort-header">Прізвище</th>
+            <th>Ім'я</th>
+            <th>По-батькові</th>
+            <th>Номер телефону</th>
+            <th>Місто</th>
+            <th>Вулиця</th>
+            <th>Поштовий індекс</th>
+            <th>Відсоток знижки</th>
+        </tr>
+        {% for card in cards %}
+        <tr>
+            <td>{{ card[1] }}</td>
+            <td>{{ card[2] }}</td>
+            <td>{{ card[3] }}</td>
+            <td>{{ card[4] }}</td>
+            <td>{{ card[5] }}</td>
+            <td>{{ card[6] }}</td>
+            <td>{{ card[7] }}</td>
+            <td>{{ card[8] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <button onclick="saveReport()">Save Report</button>
+    <a href="{{ url_for('go_customers') }}">Назад</a>
+    <a href="{{ url_for('home') }}">Додому</a>
+</body>
+
+</html>

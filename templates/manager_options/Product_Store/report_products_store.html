@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Звіт про товари в магазині</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .sort-btn {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .sort-asc:after {
+            content: ' ▲';
+        }
+
+        .sort-desc:after {
+            content: ' ▼';
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+    <script>
+        function sortTable(columnIndex) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("products-table");
+            switching = true;
+            // Set the sorting direction to ascending:
+            dir = "asc";
+            // Add or remove the sort indicator class from the header cells:
+            ths = table.getElementsByTagName("th");
+            for (i = 0; i < ths.length; i++) {
+                ths[i].classList.remove("sort-asc", "sort-desc");
+            }
+            ths[columnIndex].classList.add("sort-" + dir);
+
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                    if (dir === "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir === "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount === 0 && dir === "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+
+        function filterByUPC() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("upc-input");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("products-table");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1]; // Column index 1 for UPC
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function showPromotionalProducts() {
+            var table, tr, td, i;
+            table = document.getElementById("products-table");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[5]; // Column index 5 for "Акційний товар"
+                if (td) {
+                    if (td.innerText === "1") {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function showNonPromotionalProducts() {
+            var table, tr, td, i;
+            table = document.getElementById("products-table");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[5]; // Column index 5 for "Акційний товар"
+                if (td) {
+                    if (td.innerText === "1") {
+                        tr[i].style.display = "none";
+                    } else {
+                        tr[i].style.display = "";
+                    }
+                }
+            }
+        }
+
+        function resetFiltersAndSort() {
+            window.location.href = "{{ url_for('report_products_store') }}";
+        }
+
+        function saveReport() {
+            var docDefinition = {
+                content: [
+                    { text: 'Звіт про товари в магазині', style: 'header' },
+                    { text: '\n' },
+                    {
+                        table: {
+                            headerRows: 1,
+                            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                            body: collectTableData()
+                        }
+                    }
+                ],
+                styles: {
+                    header: {
+                        fontSize: 18,
+                        bold: true,
+                        alignment: 'center',
+                        margin: [0, 0, 0, 10]
+                    }
+                }
+            };
+
+            pdfMake.createPdf(docDefinition).download('products_report.pdf');
+        }
+
+        function collectTableData() {
+            var table = document.getElementById("products-table");
+            var data = [];
+            var headers = [];
+            for (var i = 0; i < table.rows[0].cells.length; i++) {
+                headers[i] = table.rows[0].cells[i].textContent;
+            }
+            data.push(headers);
+            for (var j = 1; j < table.rows.length; j++) {
+                var tableRow = table.rows[j];
+                var rowData = [];
+                for (var k = 0; k < tableRow.cells.length; k++) {
+                    rowData[k] = tableRow.cells[k].textContent;
+                }
+                data.push(rowData);
+            }
+            return data;
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Звіт про товари в магазині</h1>
+    <div>
+        <label for="upc-input">Пошук за UPC:</label>
+        <input type="text" id="upc-input">
+        <button onclick="filterByUPC()">Пошук</button>
+    </div>
+    <button onclick="showPromotionalProducts()">Показати акційні товари</button>
+    <button onclick="showNonPromotionalProducts()">Показати неакційні товари</button>
+    <button onclick="resetFiltersAndSort()">Скинути</button>
+    <table id="products-table">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)" class="sort-btn">ID товару</th>
+                <th onclick="sortTable(1)" class="sort-btn">UPC</th>
+                <th onclick="sortTable(2)" class="sort-btn">UPC_prom</th>
+                <th onclick="sortTable(3)" class="sort-btn">Ціна продажу</th>
+                <th onclick="sortTable(4)" class="sort-btn">Кількість товару</th>
+                <th>Акційний товар</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product[2] }}</td>
+                <td>{{ product[0] }}</td>
+                <td>{{ product[1] }}</td>
+                <td>{{ product[3] }}</td>
+                <td>{{ product[4] }}</td>
+                <td>{{ product[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    {%if role==1%}
+    <a href="{{ url_for('go_product_store') }}">Назад</a>
+    {%endif%}
+    {%if role==0%}
+    <a href="{{ url_for('cashier_cabinet') }}">Назад</a>
+    {%endif%}
+    <a href="{{ url_for('home') }}">Додому</a>
+    <button onclick="saveReport()">Зберегти звіт в PDF</button>
+</body>
+
+</html>

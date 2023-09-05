@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Мої чеки</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+    <script>
+        function searchByCheck() {
+            var checkName = document.getElementById("checkName").value.toUpperCase();
+            var table = document.getElementById("checkTable");
+            var rows = table.getElementsByTagName("tr");
+
+            for (var i = 1; i < rows.length; i++) {
+                var checkCell = rows[i].getElementsByTagName("td")[0];
+                if (checkCell) {
+                    var checkValue = checkCell.textContent || checkCell.innerText;
+                    if (checkValue.toUpperCase().indexOf(checkName) > -1) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+    <body id="page-top">
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <nav class="navbar navbar-expand navbar-light bg-primary topbar mb-4 static-top shadow">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <b> Кабінет касира </b>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                Мої чеки
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('all_clients')}}">
+                                Клієнти
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('all_products')}}">
+                                Продукти
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('search_product_by_name')}}">
+                                Пошук за назвою
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('all_products_store')}}">
+                                Наявність
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('cashier_cabinet')}}">
+                                Головна
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">
+                                Вийти
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Sidebar -->
+                    <div class="col-md-2">
+                        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+                            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+                                <div class="sidebar-brand-icon rotate-n-15">
+                                    <i class="fas fa-laugh-wink"></i>
+                                </div>
+                                <div class="sidebar-brand-text mx-3">Zlagoda</div>
+                            </a>
+
+                            <!-- Divider -->
+                            <hr class="sidebar-divider my-0">
+
+
+
+                            <!-- Divider  -->
+                            <hr class="sidebar-divider">
+
+                            <!-- Heading -->
+                            <div class="sidebar-heading">
+                                Мій профіль
+                            </div>
+                            <div>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        ID працівника: {{ data[0] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Прізвище: {{ data[1] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Ім'я: {{ data[2] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        По батькові: {{ data[3] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Посада: {{ data[4] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Заробітна плата: {{ data[5] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Дата народження: {{ data[6] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Початок роботи: {{ data[7] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Тел.номер: {{ data[8] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Місто: {{ data[9] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Вулиця: {{ data[10] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Поштовий індекс: {{ data[11] }}
+                                    </a>
+                                </li>
+
+                            </div>
+
+
+                            <hr class="sidebar-divider d-none d-md-block">
+                        </ul>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="container-fluid">
+
+                            <form class='my-form' method="post" action="{{ url_for('my_checks') }}">
+                                <label for="startDate">Початкова дата:</label>
+                                <input type="date" id="startDate" name="start_date" value="{{ start_date }}" required>
+
+                                <label for="endDate">Кінцева дата:</label>
+                                <input type="date" id="endDate" name="end_date" value="{{ end_date }}" required>
+
+                                <button type="submit">Показати</button>
+
+                            </form>
+                            <form>
+                                <br>
+                                <label for="checkName">Пошук за назвою:</label>
+                                <input type="text" id="checkName" class="form-control bg-light small"
+                                    style=" width: 30%;" onkeyup="searchByCheck()" placeholder="Введіть назву чеку">
+                            </form>
+
+                            <br>
+                            <table class="table table-bordered" id="checkTable">
+                                <thead>
+                                    <tr>
+                                        <th>Номер чеку</th>
+                                        <th>ID працівника</th>
+                                        <th>Номер картки</th>
+                                        <th>Дата друку</th>
+                                        <th>Сума</th>
+                                        <th>ПДВ</th>
+                                        <th>Назва продукту</th>
+                                        <th>Кількість</th>
+                                        <th>Ціна продажу</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for check in checks %}
+                                    <tr>
+                                        <td>{{ check[0] }}</td>
+                                        <td>{{ check[1] }}</td>
+                                        <td>{{ check[2] }}</td>
+                                        <td>{{ check[3] }}</td>
+                                        <td>{{ check[4] }}</td>
+                                        <td>{{ check[5] }}</td>
+                                        <td>{{ check[6] }}</td>
+                                        <td>{{ check[7] }}</td>
+                                        <td>{{ check[8] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+    </body>
+
+</html>
+{% endblock %}

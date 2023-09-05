@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Звіт про чеки</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+    <script>
+        function saveReport() {
+            var docDefinition = {
+                content: [
+                    { text: 'Звіт про чеки', style: 'header' },
+                    { text: '\n' },
+                    {
+                        table: {
+                            headerRows: 1,
+                            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                            body: collectTableData()
+                        }
+                    }
+                ],
+                styles: {
+                    header: {
+                        fontSize: 18,
+                        bold: true
+                    }
+                }
+            };
+
+            pdfMake.createPdf(docDefinition).open();
+        }
+
+        function collectTableData() {
+            var table = document.querySelector('table');
+            var data = [];
+
+            for (var i = 0; i < table.rows.length; i++) {
+                var tableRow = table.rows[i];
+                var rowData = [];
+
+                for (var j = 0; j < tableRow.cells.length; j++) {
+                    rowData[j] = tableRow.cells[j].innerHTML;
+                }
+
+                data.push(rowData);
+            }
+
+            return data;
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Звіт про чеки</h1>
+    <form method="POST" action="{{url_for('check_by_id')}}">
+        <label for="cashier_id">ID касира:</label>
+        <input type="text" name="cashier_id" id="cashier_id" pattern=".*">
+        <br>
+        <label for="product_name">Товар, продана кількість якого цікавить:</label>
+        <input type="text" name="product_name" id="product_name">
+        <br>
+        <label for="start_date">Початкова дата:</label>
+        <input type="date" name="start_date" id="start_date" required>
+        <br>
+        <label for="end_date">Кінцева дата:</label>
+        <input type="date" name="end_date" id="end_date" required>
+        <br>
+        <button type="submit">Отримати інформацію</button>
+    </form>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th>Номер чеку</th>
+                <th>ID працівника</th>
+                <th>Номер картки</th>
+                <th>Дата друку</th>
+                <th>Загальна сума</th>
+                <th>ПДВ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for check in checks %}
+            <tr>
+                <td>{{ check[0] }}</td>
+                <td>{{ check[1] }}</td>
+                <td>{{ check[2] }}</td>
+                <td>{{ check[3] }}</td>
+                <td>{{ check[4] }}</td>
+                <td>{{ check[5] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <button onclick="saveReport()">Save Report</button>
+    <a href="{{ url_for('home') }}">Додому</a>
+    <a href="{{ url_for('go_check') }}">Назад</a>
+</body>
+
+</html>

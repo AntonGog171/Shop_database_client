@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Видалити категорію</title>
+</head>
+
+<body>
+    <h1>Видалити категорію</h1>
+    <form class="my-form" method="POST" action="{{ url_for('delete_category') }}">
+        <div>
+            <label for="category_number">Номер категорії:</label>
+            <select name="category_number">
+                {% for option in options %}
+                <option value="{{ option }}">{{ option }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" value="Видалити">Видалити</button>
+        </div>
+    </form>
+    <br>
+    <a href="{{ url_for('go_category') }}" class="btn btn-primary btn-icon-split">
+        <span class="icon text-white-50">
+            <i class="fas fa-flag"></i>
+        </span>
+        <span class="text">Назад</span>
+    </a>
+</body>
+
+</html>
+{% endblock %}

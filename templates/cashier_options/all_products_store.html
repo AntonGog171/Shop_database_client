@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Store Products</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+
+    <body id="page-top">
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <div id="content">
+                <nav class="navbar navbar-expand navbar-light bg-primary topbar mb-4 static-top shadow">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <b> Кабінет касира </b>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('my_checks') }}">
+                                Мої чеки
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('all_clients')}}">
+                                Клієнти
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('all_products')}}">
+                                Продукти
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('search_product_by_name')}}">
+                                Пошук за назвою
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                Наявність
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{url_for('cashier_cabinet')}}">
+                                Головна
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">
+                                Вийти
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Sidebar -->
+                    <div class="col-md-2">
+                        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+                            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+                                <div class="sidebar-brand-icon rotate-n-15">
+                                    <i class="fas fa-laugh-wink"></i>
+                                </div>
+                                <div class="sidebar-brand-text mx-3">Zlagoda</div>
+                            </a>
+
+                            <!-- Divider -->
+                            <hr class="sidebar-divider my-0">
+
+
+
+                            <!-- Divider  -->
+                            <hr class="sidebar-divider">
+
+                            <!-- Heading -->
+                            <div class="sidebar-heading">
+                                Мій профіль
+                            </div>
+                            <div>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        ID працівника: {{ data[0] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Прізвище: {{ data[1] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Ім'я: {{ data[2] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        По батькові: {{ data[3] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Посада: {{ data[4] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Заробітна плата: {{ data[5] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Дата народження: {{ data[6] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Початок роботи: {{ data[7] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Тел.номер: {{ data[8] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Місто: {{ data[9] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Вулиця: {{ data[10] }}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" style="font-size: 12px;" href="#">
+                                        Поштовий індекс: {{ data[11] }}
+                                    </a>
+                                </li>
+
+                            </div>
+
+
+                            <hr class="sidebar-divider d-none d-md-block">
+                        </ul>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="container-fluid">
+
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>UPC</th>
+                                        <th>UPC_prom</th>
+                                        <th>Product ID</th>
+                                        <th>Categoty</th>
+                                        <th>Product name</th>
+                                        <th>characteristics</th>
+                                        <th>selling price</th>
+                                        <th>products amount</th>
+                                        <th>promotional_product</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in products %}
+                                    <tr>
+                                        <td>{{ product[0] }}</td>
+                                        <td>{{ product[1] }}</td>
+                                        <td>{{ product[2] }}</td>
+                                        <td>{{ product[3] }}</td>
+                                        <td>{{ product[4] }}</td>
+                                        <td>{{ product[5] }}</td>
+                                        <td>{{ product[6] }}</td>
+                                        <td>{{ product[7] }}</td>
+                                        <td>{{ product[8] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+    </body>
+
+</html>
